@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         firebaseAuth = FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser() != null){
             //profile Activity
+            finish();
             startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
         }
         pDialog = new ProgressDialog(this);
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pDialog.dismiss();
                 if (task.isSuccessful()) {
                         //profile Activity
+                    finish();
                     startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
                    // Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
                 } else {

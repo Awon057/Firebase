@@ -9,6 +9,22 @@
     tools:context="com.example.user.firebaseauthapp.PriofileActivity">
 
 
+    <TextView
+        android:id="@+id/push_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="26dp" />
+
+    <TextView
+        android:id="@+id/reg_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
