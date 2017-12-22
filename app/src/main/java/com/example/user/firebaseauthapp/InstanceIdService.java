@@ -35,6 +35,7 @@ public class InstanceIdService extends FirebaseInstanceIdService {
     }
 
     private void storeRegIdInPref(String token) {
+        //String Token=FirebaseInstanceId.getInstance().getToken();
         SharedPreferences pref=getApplicationContext().getSharedPreferences(config.SHARED_PREF,0);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("regId",token);

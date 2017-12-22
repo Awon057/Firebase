@@ -34,12 +34,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
-        if(firebaseAuth.getCurrentUser() != null){
+        if (firebaseAuth.getCurrentUser() != null) {
             //profile Activity
             finish();
-            startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
+            startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
         }
         progressDialog = new ProgressDialog(this);
 
@@ -53,9 +53,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void userLogin(){
-        String email=loginEmail.getText().toString().trim();
-        String pass=loginPassword.getText().toString().trim();
+    private void userLogin() {
+        String email = loginEmail.getText().toString().trim();
+        String pass = loginPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please Enter Email", Toast.LENGTH_SHORT).show();
@@ -69,16 +69,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressDialog.setMessage("Loging in");
         progressDialog.show();
 
-        firebaseAuth.signInWithEmailAndPassword(email,pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressDialog.dismiss();
-                if(task.isSuccessful()){
+                if (task.isSuccessful()) {
                     finish();
-                    startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
-                }
-                else {
-                    Toast.makeText(getApplicationContext(),"Try Again",Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
+                } else {
+                    Toast.makeText(getApplicationContext(), "Try Again", Toast.LENGTH_SHORT).show();
                 }
             }
         });

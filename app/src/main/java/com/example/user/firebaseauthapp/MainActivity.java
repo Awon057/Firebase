@@ -32,10 +32,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        if(firebaseAuth.getCurrentUser() != null){
+        if (firebaseAuth.getCurrentUser() != null) {
             //profile Activity
             finish();
-            startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
+            startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
         }
         pDialog = new ProgressDialog(this);
 
@@ -70,10 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onComplete(@NonNull Task<AuthResult> task) {
                 pDialog.dismiss();
                 if (task.isSuccessful()) {
-                        //profile Activity
+                    //profile Activity
                     finish();
-                    startActivity(new Intent(getApplicationContext(),PriofileActivity.class));
-                   // Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
+                    // Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "Could not register.Please try again", Toast.LENGTH_SHORT).show();
                 }

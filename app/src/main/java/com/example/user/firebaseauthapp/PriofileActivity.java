@@ -5,10 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.view.StandaloneActionMode;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class PriofileActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,20 +64,26 @@ public class PriofileActivity extends AppCompatActivity implements View.OnClickL
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
+        try {
+            FileInputStream is = new FileInputStream("/non-existent/file");
+            int c = is.read();
+        } catch(IOException e) {
+            FirebaseCrash.report(e); // Generate report
+        }
+
         userEmail = (TextView) findViewById(R.id.userEmail);
         userEmail.setText("Welcome " + user.getEmail());
         loguotButton = (Button) findViewById(R.id.logoutButton);
 
         loguotButton.setOnClickListener(this);
-
-
-    }
+ }
 
     private void displayFirebaseRegId() {
         SharedPreferences pref=getApplicationContext().getSharedPreferences(config.SHARED_PREF,0);
         String regId=pref.getString("regId",null);
 
         Log.e(TAG,"Firebase reg id: "+regId);
+
 
         if(!TextUtils.isEmpty(regId))
             txtRegId.setText("Firebase Reg Id: "+regId);
@@ -83,9 +92,8 @@ public class PriofileActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
+    protected void onResume() {
+        super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(config.REGISTRATION_COMPLETE));
         NotificationUtils.clearNotifications(getApplicationContext());
     }
