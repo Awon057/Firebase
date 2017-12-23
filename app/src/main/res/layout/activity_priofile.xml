@@ -45,5 +45,19 @@
             android:id="@+id/logoutButton"
             android:layout_gravity="center_horizontal"
             />
+        <TextView
+            android:id="@+id/welcomeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Welcome..."
+            android:layout_margin="5dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="fetch remote welcome message"
+            android:id="@+id/fetchButton"
+            android:layout_gravity="center"/>
     </LinearLayout>
 </RelativeLayout>
