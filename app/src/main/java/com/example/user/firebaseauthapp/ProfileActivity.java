@@ -28,7 +28,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class PriofileActivity extends AppCompatActivity implements View.OnClickListener {
+public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView userEmail;
     private Button loguotButton;
@@ -37,7 +37,7 @@ public class PriofileActivity extends AppCompatActivity implements View.OnClickL
     private TextView txtmessage;
     private TextView txtRegId;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private static final String TAG = PriofileActivity.class.getSimpleName();
+    private static final String TAG = ProfileActivity.class.getSimpleName();
     private TextView mWelcomeTextView;
     private Button fetchButton;
 
@@ -128,10 +128,10 @@ public class PriofileActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(PriofileActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileActivity.this, "Fetch Succeeded", Toast.LENGTH_SHORT).show();
                             firebaseRemoteConfig.activateFetched();
                         } else {
-                            Toast.makeText(PriofileActivity.this, "Fetch Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileActivity.this, "Fetch Failed", Toast.LENGTH_SHORT).show();
                         }
                         displayWelcomeMessage();
                     }

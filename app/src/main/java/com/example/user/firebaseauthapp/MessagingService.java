@@ -2,10 +2,12 @@ package com.example.user.firebaseauthapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -84,7 +86,7 @@ public class MessagingService extends FirebaseMessagingService {
                 pushNotification.putExtra("message", message);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
             } else {
-                Intent resultIntent = new Intent(getApplicationContext(), PriofileActivity.class);
+                Intent resultIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                 resultIntent.putExtra("message", message);
 
                 //check for image attachment
@@ -111,5 +113,31 @@ public class MessagingService extends FirebaseMessagingService {
         mNotificationUtils = new NotificationUtils(context);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mNotificationUtils.showNotificationMessage(title,message,timeStamp,intent);
+    }
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+
+        storeRegIdInPref(refreshedToken);
+
+        sendRegistrationToServer(refreshedToken);
+
+        Intent registrationComplete = new Intent(config.REGISTRATION_COMPLETE);
+        registrationComplete.putExtra("token", refreshedToken);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
+    }
+
+    private void sendRegistrationToServer(final String token) {
+        Log.e(TAG, "sendRegistrationToServer: " + token);
+    }
+
+    private void storeRegIdInPref(String token) {
+        //String Token=FirebaseInstanceId.getInstance().getToken();
+        SharedPreferences pref=getApplicationContext().getSharedPreferences(config.SHARED_PREF,0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("regId",token);
+        editor.commit();
     }
 }

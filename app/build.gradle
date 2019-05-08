@@ -29,6 +29,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:18.0.0'
     implementation 'com.google.firebase:firebase-crash:16.2.1'
     implementation 'com.google.firebase:firebase-config:17.0.0'
+    implementation 'com.google.firebase:firebase-database:17.0.0'
     testImplementation 'junit:junit:4.13-beta-2'
 }
 apply plugin: 'com.google.gms.google-services'

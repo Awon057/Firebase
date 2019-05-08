@@ -2,7 +2,6 @@ package com.example.user.firebaseauthapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,8 +16,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
-import org.w3c.dom.Text;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,7 +36,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (firebaseAuth.getCurrentUser() != null) {
             //profile Activity
             finish();
-            startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
+            startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
         }
         progressDialog = new ProgressDialog(this);
 
@@ -75,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 progressDialog.dismiss();
                 if (task.isSuccessful()) {
                     finish();
-                    startActivity(new Intent(getApplicationContext(), PriofileActivity.class));
+                    startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                 } else {
                     Toast.makeText(getApplicationContext(), "Try Again", Toast.LENGTH_SHORT).show();
                 }
