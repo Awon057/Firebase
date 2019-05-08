@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (v == textViewSignin) {
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         }
     }
 }

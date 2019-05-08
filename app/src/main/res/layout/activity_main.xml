@@ -52,6 +52,4 @@
             android:text="already registered?Sign in"
             android:textAllCaps="false"/>
     </LinearLayout>
-
-
 </RelativeLayout>

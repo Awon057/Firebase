@@ -21,6 +21,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -40,6 +45,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private static final String TAG = ProfileActivity.class.getSimpleName();
     private TextView mWelcomeTextView;
     private Button fetchButton;
+    private DatabaseReference mDatabase;
+
 
     private static final String LOADING_PHRASE_CONFIG_KEY = "loading_phrase";
     private static final String WELCOME_MESSAGE_KEY = "welcome_message";
@@ -48,13 +55,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_priofile);
+        setContentView(R.layout.activity_profile);
 
         txtRegId = (TextView) findViewById(R.id.reg_id);
         txtmessage = (TextView) findViewById(R.id.push_message);
         mWelcomeTextView = (TextView) findViewById(R.id.welcomeTextView);
         fetchButton = (Button) findViewById(R.id.fetchButton);
 
+        database();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
 
             @Override
@@ -100,6 +108,37 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         loguotButton.setOnClickListener(this);
         fetchButton.setOnClickListener(this);
+    }
+
+    private void database() {
+        /*mDatabase = FirebaseDatabase.getInstance().getReference("copyright");
+        mDatabase.setValue("©2016 androidhive. All rights Reserved");*/
+
+        mDatabase = FirebaseDatabase.getInstance().getReference("users");
+        String userId = mDatabase.push().getKey();
+        // creating user object
+        UserModel user = new UserModel("awon", "awon@gmail.com");
+        // pushing user to 'users' node using the userId
+        mDatabase.child(userId).setValue(user);
+
+        // Read from the database
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+               /* String value = dataSnapshot.getValue(String.class);
+                Log.d(TAG, "Value is: " + value);*/
+                UserModel user = dataSnapshot.getValue(UserModel.class);
+                Log.d(TAG, "User name: " + user.getName() + ", email " + user.getEmail());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
     }
 
     private void displayFirebaseRegId() {
