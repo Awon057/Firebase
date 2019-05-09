@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -45,12 +46,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private static final String TAG = ProfileActivity.class.getSimpleName();
     private TextView mWelcomeTextView;
     private Button fetchButton;
-    private DatabaseReference mDatabase;
-
+    private DatabaseReference mDatabaseTable;
 
     private static final String LOADING_PHRASE_CONFIG_KEY = "loading_phrase";
     private static final String WELCOME_MESSAGE_KEY = "welcome_message";
     private static final String WELCOME_MESSAGE_CAPS_KEY = "welcome_message_caps";
+    private Button updateDataButton;
+    private FirebaseDatabase mInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +63,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txtmessage = (TextView) findViewById(R.id.push_message);
         mWelcomeTextView = (TextView) findViewById(R.id.welcomeTextView);
         fetchButton = (Button) findViewById(R.id.fetchButton);
+        updateDataButton = (Button) findViewById(R.id.updateDataButton);
 
-        database();
         mRegistrationBroadcastReceiver = new BroadcastReceiver() {
 
             @Override
@@ -102,41 +104,62 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             FirebaseCrash.report(e); // Generate report
         }
 
-        userEmail = (TextView) findViewById(R.id.userEmail);
-        userEmail.setText("Welcome " + user.getEmail());
-        loguotButton = (Button) findViewById(R.id.logoutButton);
+        mInstance = FirebaseDatabase.getInstance();
 
-        loguotButton.setOnClickListener(this);
-        fetchButton.setOnClickListener(this);
-    }
-
-    private void database() {
-        /*mDatabase = FirebaseDatabase.getInstance().getReference("copyright");
-        mDatabase.setValue("©2016 androidhive. All rights Reserved");*/
-
-        mDatabase = FirebaseDatabase.getInstance().getReference("users");
-        String userId = mDatabase.push().getKey();
-        // creating user object
-        UserModel user = new UserModel("awon", "awon@gmail.com");
-        // pushing user to 'users' node using the userId
-        mDatabase.child(userId).setValue(user);
-
+        // store app title to 'app_title' node
+        mInstance.getReference("app_title").setValue("Realtime Database");
+        mDatabaseTable = mInstance.getReference("users");
         // Read from the database
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mInstance.getReference("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-               /* String value = dataSnapshot.getValue(String.class);
+                /*String value = dataSnapshot.getValue(String.class);
                 Log.d(TAG, "Value is: " + value);*/
-                UserModel user = dataSnapshot.getValue(UserModel.class);
-                Log.d(TAG, "User name: " + user.getName() + ", email " + user.getEmail());
+                if (dataSnapshot != null) {
+                    for (DataSnapshot userlist: dataSnapshot.getChildren()){
+                        UserModel user = userlist.getValue(UserModel.class);
+                        System.out.println( "User name: " + user.getName() + ", email " + user.getEmail());
+                    }
+                } else Toast.makeText(ProfileActivity.this,"No data found", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        userEmail = (TextView) findViewById(R.id.userEmail);
+        userEmail.setText("Welcome " + user.getEmail());
+        loguotButton = (Button) findViewById(R.id.logoutButton);
+
+        loguotButton.setOnClickListener(this);
+        fetchButton.setOnClickListener(this);
+        updateDataButton.setOnClickListener(this);
+    }
+
+    private void database() {
+        mDatabaseTable.orderByChild("email").equalTo("awon@gmail.com").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    //create new user
+                    String userId = mDatabaseTable.push().getKey();
+                    System.out.println(userId);
+                    UserModel user = new UserModel("awon zaman", "awon@gmail.com");
+                    // pushing user to 'users' node using the userId
+                    mDatabaseTable.child(userId).setValue(user);
+                } else {
+                    Toast.makeText(ProfileActivity.this,"Email already exists",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
             }
         });
     }
@@ -210,6 +233,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             startActivity(new Intent(this, LoginActivity.class));
         } else if (v == fetchButton) {
             fetchWelcome();
+        } else if (v == updateDataButton) {
+            database();
         }
     }
 }
