@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.user.firebaseauthapp.MainActivity">
+    tools:context="com.example.user.firebaseauthapp.activity.MainActivity">
 
     <LinearLayout
         android:layout_centerHorizontal="true"
@@ -35,6 +35,8 @@
             android:inputType="textPassword"
             android:hint="Enter your Password"
             android:id="@+id/password"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

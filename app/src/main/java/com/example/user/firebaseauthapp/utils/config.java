@@ -1,4 +1,4 @@
-package com.example.user.firebaseauthapp;
+package com.example.user.firebaseauthapp.utils;
 
 /**
  * Created by User on 8/16/2017.

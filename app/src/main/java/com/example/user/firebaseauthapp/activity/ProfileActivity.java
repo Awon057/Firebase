@@ -1,4 +1,4 @@
-package com.example.user.firebaseauthapp;
+package com.example.user.firebaseauthapp.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,6 +16,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.firebaseauthapp.BuildConfig;
+import com.example.user.firebaseauthapp.R;
+import com.example.user.firebaseauthapp.model.UserModel;
+import com.example.user.firebaseauthapp.utils.NotificationUtils;
+import com.example.user.firebaseauthapp.utils.config;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,7 +30,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -89,6 +93,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
+        System.out.println(user.getDisplayName());
+        System.out.println(user.getEmail());
+        System.out.println(user.getUid());
+        System.out.println(user.getProviderData());
+
         firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                 .setDeveloperModeEnabled(BuildConfig.DEBUG)
@@ -110,13 +119,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         mInstance.getReference("app_title").setValue("Realtime Database");
         mDatabaseTable = mInstance.getReference("users");
         // Read from the database
-        mInstance.getReference("users").addValueEventListener(new ValueEventListener() {
+        mDatabaseTable.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                /*String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);*/
                 if (dataSnapshot != null) {
                     for (DataSnapshot userlist: dataSnapshot.getChildren()){
                         UserModel user = userlist.getValue(UserModel.class);
@@ -229,8 +236,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View v) {
         if (v == loguotButton) {
             firebaseAuth.signOut();
-            finish();
             startActivity(new Intent(this, LoginActivity.class));
+            finish();
         } else if (v == fetchButton) {
             fetchWelcome();
         } else if (v == updateDataButton) {

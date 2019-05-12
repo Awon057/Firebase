@@ -1,4 +1,4 @@
-package com.example.user.firebaseauthapp;
+package com.example.user.firebaseauthapp.utils;
 
 import android.app.ActivityManager;
 import android.app.Notification;
@@ -8,18 +8,16 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Patterns;
+
+import com.example.user.firebaseauthapp.R;
 
 import java.io.IOException;
 import java.io.InputStream;

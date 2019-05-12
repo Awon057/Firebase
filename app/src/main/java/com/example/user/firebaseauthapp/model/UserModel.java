@@ -1,4 +1,4 @@
-package com.example.user.firebaseauthapp;
+package com.example.user.firebaseauthapp.model;
 
 public class UserModel {
     public String name;

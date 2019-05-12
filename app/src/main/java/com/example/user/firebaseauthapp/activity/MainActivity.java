@@ -1,4 +1,4 @@
-package com.example.user.firebaseauthapp;
+package com.example.user.firebaseauthapp.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.user.firebaseauthapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         button = (Button) findViewById(R.id.registerButton);
         editEmail = (EditText) findViewById(R.id.email);
         editPassword = (EditText) findViewById(R.id.password);
+        editPassword.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         textViewSignin = (TextView) findViewById(R.id.textView);
 
@@ -71,11 +74,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 pDialog.dismiss();
                 if (task.isSuccessful()) {
                     //profile Activity
-                    finish();
                     startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
-                    // Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                    finish();
                 } else {
-                    Toast.makeText(MainActivity.this, "Could not register.Please try again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
