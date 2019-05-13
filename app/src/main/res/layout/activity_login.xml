@@ -39,13 +39,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:layout_margin="15dp"
-            android:id="@+id/buttonSignin"
-            android:text="Login"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:weightSum="6"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/buttonSignin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:text="Login"
+                android:background="@drawable/button_background"
+                android:layout_weight="2"
+                android:textAllCaps="false" /></LinearLayout>
         <TextView
             android:id="@+id/textViewSignUp"
             android:textAlignment="center"
