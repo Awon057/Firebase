@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,6 +19,9 @@ import com.example.user.firebaseauthapp.adapter.NotesAdapter;
 import com.example.user.firebaseauthapp.R;
 import com.example.user.firebaseauthapp.model.NotesModel;
 import com.example.user.firebaseauthapp.model.UserModel;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -34,7 +38,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
-    private LinearLayoutManager layoutManager;
     private NotesAdapter mAdapter;
     private FirebaseAuth firebaseAuth;
     private static final String TAG = NotesActivity.class.getSimpleName();
@@ -42,6 +45,8 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseDatabase mInstance;
     private List<NotesModel> list;
     private Toolbar mTopToolbar;
+    private GridLayoutManager layoutManager;
+    //private FlexboxLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +61,13 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         recyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
 
         // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = new GridLayoutManager(this,2);
+        /*layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexDirection(FlexDirection.ROW);
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START);*/
         recyclerView.setLayoutManager(layoutManager);
         mAdapter = new NotesAdapter();
         recyclerView.setAdapter(mAdapter);
-        list = new ArrayList<>();
 
         initializeData();
         fab.setOnClickListener(this);
@@ -79,6 +86,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 if (dataSnapshot != null) {
+                    list = new ArrayList<>();
                     for (DataSnapshot notes: dataSnapshot.getChildren()){
                         list.add(notes.getValue(NotesModel.class));
                     }
@@ -125,6 +133,6 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        mAdapter.setRecords(list,NotesActivity.this);
+        //mAdapter.setRecords(list,NotesActivity.this);
     }
 }
