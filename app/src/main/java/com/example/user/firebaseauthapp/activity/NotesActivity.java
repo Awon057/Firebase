@@ -6,7 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -37,11 +41,16 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private DatabaseReference mDatabaseTable;
     private FirebaseDatabase mInstance;
     private List<NotesModel> list;
+    private Toolbar mTopToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes);
+
+        mTopToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(mTopToolbar);
+        getSupportActionBar().setTitle("Notes");
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         recyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
@@ -83,6 +92,24 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                firebaseAuth.signOut();
+                startActivity(new Intent(this, LoginActivity.class));
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

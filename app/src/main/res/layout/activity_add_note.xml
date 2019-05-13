@@ -7,6 +7,13 @@
     android:orientation="vertical"
     tools:context=".activity.AddNoteActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/add_notes_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/HeaderBar"
+        android:elevation="4dp" />
+
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +55,7 @@
             android:layout_weight="2"
             android:text="Save"
             android:textSize="@dimen/text_size_normal"
-            android:background="@color/colorPrimary"
+            android:background="@drawable/button_background"
             android:textAllCaps="false"
             android:layout_margin="10dp"/>
     </LinearLayout>
