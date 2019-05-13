@@ -73,11 +73,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressDialog.dismiss();
                 if (task.isSuccessful()) {
-
-                    finish();
                     startActivity(new Intent(getApplicationContext(), NotesActivity.class));
+                    finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Try Again", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),  task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
