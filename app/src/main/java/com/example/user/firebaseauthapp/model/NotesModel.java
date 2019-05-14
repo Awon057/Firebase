@@ -1,6 +1,8 @@
 package com.example.user.firebaseauthapp.model;
 
-public class NotesModel {
+import java.io.Serializable;
+
+public class NotesModel implements Serializable {
     String title;
     String details;
 

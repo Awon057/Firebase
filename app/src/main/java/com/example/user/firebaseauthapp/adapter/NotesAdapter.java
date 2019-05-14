@@ -1,6 +1,7 @@
 package com.example.user.firebaseauthapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,15 +10,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.user.firebaseauthapp.R;
+import com.example.user.firebaseauthapp.activity.AddNoteActivity;
 import com.example.user.firebaseauthapp.model.NotesModel;
+import com.example.user.firebaseauthapp.model.NotesWrapperModel;
 
 import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
-    private List<NotesModel> list;
+    private List<NotesWrapperModel> list;
     private Context context;
 
-    public void setRecords(List<NotesModel> list, Context context) {
+    public void setRecords(List<NotesWrapperModel> list, Context context) {
         this.list = list;
         this.context = context;
         notifyDataSetChanged();
@@ -32,8 +35,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.title.setText(list.get(i).getTitle());
-        viewHolder.details.setText(list.get(i).getDetails());
+        viewHolder.title.setText(list.get(i).getNotesModel().getTitle());
+        viewHolder.details.setText(list.get(i).getNotesModel().getDetails());
     }
 
     @Override
@@ -53,6 +56,14 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.show_title);
             details = (TextView) itemView.findViewById(R.id.show_details);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent= new Intent(context, AddNoteActivity.class);
+                    intent.putExtra("model", list.get(getAdapterPosition()));
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }
