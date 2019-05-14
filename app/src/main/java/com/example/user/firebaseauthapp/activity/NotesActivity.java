@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.user.firebaseauthapp.R;
@@ -39,7 +41,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseDatabase mInstance;
     private List<NotesWrapperModel> list;
     private Toolbar mTopToolbar;
-    private GridLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
     //private FlexboxLayoutManager layoutManager;
 
     @Override
@@ -55,7 +57,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         recyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
 
         // use a linear layout manager
-        layoutManager = new GridLayoutManager(this, 2);
+        layoutManager = new LinearLayoutManager(this);
         /*layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setJustifyContent(JustifyContent.FLEX_START);*/
@@ -69,7 +71,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
     private void initializeData() {
         firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
 
         mInstance = FirebaseDatabase.getInstance();
         mDatabaseTable = mInstance.getReference("notes").child(user.getUid());
@@ -87,7 +89,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
                         notesWrapperModel.setNotesModel(notes.getValue(NotesModel.class));
                         list.add(notesWrapperModel);
                     }
-                    mAdapter.setRecords(list, NotesActivity.this);
+                    mAdapter.setRecords(mDatabaseTable, user, list, NotesActivity.this);
                 } else
                     Toast.makeText(NotesActivity.this, "No data found", Toast.LENGTH_SHORT).show();
             }
