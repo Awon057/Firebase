@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.w3c.dom.Text;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button buttonSignIn;
@@ -26,6 +28,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private TextView signin;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
+    private TextView forgotPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +49,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginPassword = (EditText) findViewById(R.id.loginPassword);
         buttonSignIn = (Button) findViewById(R.id.buttonSignin);
         signin = (TextView) findViewById(R.id.textViewSignUp);
+        forgotPass = (TextView) findViewById(R.id.textViewForgotPass);
 
         buttonSignIn.setOnClickListener(this);
         signin.setOnClickListener(this);
-
+        forgotPass.setOnClickListener(this);
     }
 
     private void userLogin() {
@@ -84,12 +88,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if (v == buttonSignIn) {
-            userLogin();
-        }
-        if (v == signin) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+        switch (v.getId()){
+            case R.id.buttonSignin:
+                userLogin();
+                break;
+            case R.id.textViewSignUp:
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+                break;
+            case R.id.textViewForgotPass:
+                startActivity(new Intent(this, ResetPasswordActivity.class));
+                finish();
+                break;
         }
     }
 }
