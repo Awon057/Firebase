@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,7 +42,8 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseDatabase mInstance;
     private List<NotesWrapperModel> list;
     private Toolbar mTopToolbar;
-    private LinearLayoutManager layoutManager;
+    private StaggeredGridLayoutManager layoutManager;
+    //private LinearLayoutManager layoutManager;
     //private FlexboxLayoutManager layoutManager;
 
     @Override
@@ -57,7 +59,9 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
         recyclerView = (RecyclerView) findViewById(R.id.notes_recycler_view);
 
         // use a linear layout manager
-        layoutManager = new LinearLayoutManager(this);
+        //layoutManager = new LinearLayoutManager(this);
+        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         /*layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
         layoutManager.setJustifyContent(JustifyContent.FLEX_START);*/
