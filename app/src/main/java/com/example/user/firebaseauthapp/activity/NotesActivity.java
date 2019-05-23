@@ -1,7 +1,10 @@
 package com.example.user.firebaseauthapp.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -20,6 +24,7 @@ import com.example.user.firebaseauthapp.R;
 import com.example.user.firebaseauthapp.adapter.NotesAdapter;
 import com.example.user.firebaseauthapp.model.NotesModel;
 import com.example.user.firebaseauthapp.model.NotesWrapperModel;
+import com.example.user.firebaseauthapp.utils.PlayDataInterface;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class NotesActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -43,6 +49,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     private List<NotesWrapperModel> list;
     private Toolbar mTopToolbar;
     private StaggeredGridLayoutManager layoutManager;
+    private TextToSpeech textToSpeech;
     //private LinearLayoutManager layoutManager;
     //private FlexboxLayoutManager layoutManager;
 
@@ -60,7 +67,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
 
         // use a linear layout manager
         //layoutManager = new LinearLayoutManager(this);
-        layoutManager = new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         /*layoutManager = new FlexboxLayoutManager(this);
         layoutManager.setFlexDirection(FlexDirection.ROW);
@@ -74,6 +81,25 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void initializeData() {
+        textToSpeech = new TextToSpeech(NotesActivity.this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int ttsLang = textToSpeech.setLanguage(Locale.US);
+
+                    if (ttsLang == TextToSpeech.LANG_MISSING_DATA
+                            || ttsLang == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "The Language is not supported!");
+                    } else {
+                        Log.i("TTS", "Language Supported.");
+                    }
+                    Log.i("TTS", "Initialization success.");
+                } else {
+                    Toast.makeText(NotesActivity.this, "TTS Initialization failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        });
         firebaseAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -93,7 +119,7 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
                         notesWrapperModel.setNotesModel(notes.getValue(NotesModel.class));
                         list.add(notesWrapperModel);
                     }
-                    mAdapter.setRecords(mDatabaseTable, user, list, NotesActivity.this);
+                    mAdapter.setRecords(mDatabaseTable, list, NotesActivity.this, passData);
                 } else
                     Toast.makeText(NotesActivity.this, "No data found", Toast.LENGTH_SHORT).show();
             }
@@ -104,6 +130,62 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+    }
+
+    PlayDataInterface passData = new PlayDataInterface() {
+        @Override
+        public void passData(NotesWrapperModel notesWrapperModel) {
+            showDialog(notesWrapperModel);
+        }
+    };
+
+
+    private void showDialog(final NotesWrapperModel notesWrapperModel) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(NotesActivity.this);
+        builder.setTitle(notesWrapperModel.getNotesModel().getTitle())
+                .setMessage(notesWrapperModel.getNotesModel().getDetails())
+
+                .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent= new Intent(NotesActivity.this, AddNoteActivity.class);
+                        intent.putExtra("model", notesWrapperModel);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Play", null);
+
+                final AlertDialog mDialog = builder.create();
+                mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        Button b = mDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                        b.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+                                if (!textToSpeech.isSpeaking()) {
+                                    String data = notesWrapperModel.getNotesModel().getTitle() + "." + notesWrapperModel.getNotesModel().getDetails();
+                                    int speechStatus = textToSpeech.speak(data, TextToSpeech.QUEUE_FLUSH, null);
+                                    mDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setText("Stop");
+
+                                    if (speechStatus == TextToSpeech.ERROR) {
+                                        Log.e("TTS", "Error in converting Text to Speech!");
+                                    }
+                                } else {
+                                    textToSpeech.stop();
+                                    mDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setText("Play");
+                                }
+                            }
+                        });
+                    }
+                });
+                mDialog.show();
+                mDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        textToSpeech.stop();
+                    }
+                });
     }
 
     @Override
@@ -139,6 +221,5 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        //mAdapter.setRecords(list,NotesActivity.this);
     }
 }

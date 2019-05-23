@@ -4,36 +4,41 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.user.firebaseauthapp.R;
 import com.example.user.firebaseauthapp.activity.AddNoteActivity;
 import com.example.user.firebaseauthapp.model.NotesModel;
 import com.example.user.firebaseauthapp.model.NotesWrapperModel;
+import com.example.user.firebaseauthapp.utils.PlayDataInterface;
 import com.example.user.firebaseauthapp.utils.SwipeListener;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
+import java.util.Locale;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
     private List<NotesWrapperModel> list;
     private Context context;
-    private FirebaseUser user;
     private DatabaseReference mDatabaseTable;
+    private PlayDataInterface passData;
 
-    public void setRecords(DatabaseReference mDatabaseTable, FirebaseUser user, List<NotesWrapperModel> list, Context context) {
+    public void setRecords(DatabaseReference mDatabaseTable, List<NotesWrapperModel> list, Context context, PlayDataInterface passData) {
         this.list = list;
         this.context = context;
-        this.user = user;
+        this.passData = passData;
         this.mDatabaseTable = mDatabaseTable;
         notifyDataSetChanged();
     }
@@ -74,28 +79,16 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent= new Intent(context, AddNoteActivity.class);
-                    intent.putExtra("model", list.get(getAdapterPosition()));
-                    context.startActivity(intent);
+                    showDialog(list.get(getAdapterPosition()));
                 }
             });
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
-                    showDialog(list.get(getAdapterPosition()));
-                    return false;
+                public void onClick(View v) {
+                    passData.passData(list.get(getAdapterPosition()));
                 }
             });
-            /*itemView.setOnTouchListener(new SwipeListener(context) {
-                public void onSwipeRight() {
-                    showDialog(list.get(getAdapterPosition()));
-                }
-
-                public void onSwipeLeft() {
-                    showDialog(list.get(getAdapterPosition()));
-                }
-            });*/
         }
     }
 
@@ -106,7 +99,6 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        System.out.println(mDatabaseTable.child(notesWrapperModel.getId()));
                         mDatabaseTable.child(notesWrapperModel.getId()).removeValue();
                         dialog.dismiss();
                     }
