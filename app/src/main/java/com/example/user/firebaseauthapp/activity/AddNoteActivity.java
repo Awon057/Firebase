@@ -1,19 +1,27 @@
 package com.example.user.firebaseauthapp.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.user.firebaseauthapp.R;
 import com.example.user.firebaseauthapp.model.NotesModel;
 import com.example.user.firebaseauthapp.model.NotesWrapperModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -140,5 +148,53 @@ public class AddNoteActivity extends AppCompatActivity implements View.OnClickLi
         // pushing user to 'notes' node using the userId
         mDatabaseTable.child(user.getUid()).child(userId).setValue(notesModel);
         finish();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.delete_menu, menu);
+        if (wrapper.getId() == null) {
+            MenuItem item = menu.findItem(R.id.action_delete);
+            item.setVisible(false);
+            invalidateOptionsMenu();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                showDialog(wrapper);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showDialog(final NotesWrapperModel notesWrapperModel) {
+        new AlertDialog.Builder(AddNoteActivity.this)
+                .setTitle("Delete entry")
+                .setMessage("Are you sure you want to delete this entry?")
+
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDatabaseTable.child(user.getUid()).child(notesWrapperModel.getId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    finish();
+                                }
+                                else Toast.makeText(AddNoteActivity.this,"Failed to Delete.",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        dialog.dismiss();
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 }

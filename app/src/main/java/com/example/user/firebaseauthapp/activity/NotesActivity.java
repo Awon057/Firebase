@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -25,6 +26,8 @@ import com.example.user.firebaseauthapp.adapter.NotesAdapter;
 import com.example.user.firebaseauthapp.model.NotesModel;
 import com.example.user.firebaseauthapp.model.NotesWrapperModel;
 import com.example.user.firebaseauthapp.utils.PlayDataInterface;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -198,14 +201,28 @@ public class NotesActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_logout:
-                firebaseAuth.signOut();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+                showDialog();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+    private void showDialog() {
+        new AlertDialog.Builder(NotesActivity.this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
 
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        firebaseAuth.signOut();
+                        startActivity(new Intent(NotesActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
