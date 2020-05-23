@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class AddNoteActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddNoteActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
 
     private static final int MY_TITLE_CHECK_CODE = 101;
     private static final int MY_DETAILS_CHECK_CODE = 102;
@@ -74,8 +75,13 @@ public class AddNoteActivity extends AppCompatActivity implements View.OnClickLi
         mDatabaseTable = mInstance.getReference("notes");
 
         saveButton.setOnClickListener(this);
-        speakTitle.setOnClickListener(this);
-        speakDetails.setOnClickListener(this);
+        speakTitle.setVisibility(View.GONE);
+        speakDetails.setVisibility(View.GONE);
+        /*speakTitle.setOnClickListener(this);
+        speakDetails.setOnClickListener(this);*/
+
+        title.setOnTouchListener(this);
+        details.setOnTouchListener(this);
     }
 
     private void initialize() {
@@ -96,7 +102,7 @@ public class AddNoteActivity extends AppCompatActivity implements View.OnClickLi
                 } else
                     saveNotes(notesModel);
                 break;
-            case R.id.btn_speak_title:
+            /*case R.id.btn_speak_title:
                 Intent checkIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
                 checkIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 checkIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
@@ -109,25 +115,22 @@ public class AddNoteActivity extends AppCompatActivity implements View.OnClickLi
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
                 intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
                 startActivityForResult(intent, MY_DETAILS_CHECK_CODE);
-                break;
+                break;*/
         }
     }
 
-    protected void onActivityResult(
-            int requestCode, int resultCode, Intent data) {
-        if (requestCode == MY_TITLE_CHECK_CODE) {
-            if (resultCode == RESULT_OK && null != data) {
-                // success, create the TTS instance
-                //mTts = new TextToSpeech(this, this);
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                title.setText(result.get(0));
-            }
-        } else if (requestCode == MY_DETAILS_CHECK_CODE) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                // success, create the TTS instance
-                //mTts = new TextToSpeech(this, this);
-                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                details.setText(result.get(0));
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && null != data){
+            if (requestCode == MY_TITLE_CHECK_CODE) {
+                    // success, create the TTS instance
+                    //mTts = new TextToSpeech(this, this);
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    title.setText(result.get(0));
+            } else if (requestCode == MY_DETAILS_CHECK_CODE) {
+                    // success, create the TTS instance
+                    //mTts = new TextToSpeech(this, this);
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    details.setText(result.get(0));
             }
         }
     }
@@ -196,5 +199,38 @@ public class AddNoteActivity extends AppCompatActivity implements View.OnClickLi
                 .setNegativeButton(android.R.string.no, null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        switch (view.getId()){
+            case R.id.title:
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if(motionEvent.getRawX() >= (title.getRight() - title.getCompoundDrawables()[2].getBounds().width())) {
+                        // your action here
+                        Intent checkIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                        checkIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                        checkIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                        checkIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+                        startActivityForResult(checkIntent, MY_TITLE_CHECK_CODE);
+                        return true;
+                    }
+                }
+                return false;
+            case R.id.details:
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    if(motionEvent.getRawX() >= (details.getRight() - details.getCompoundDrawables()[2].getBounds().width())) {
+                        // your action here
+                        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Hello, How can I help you?");
+                        startActivityForResult(intent, MY_DETAILS_CHECK_CODE);
+                        return true;
+                    }
+                }
+                return false;
+        }
+        return false;
     }
 }
