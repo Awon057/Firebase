@@ -4,4 +4,5 @@
     <dimen name="text_size_medium">16sp</dimen>
     <dimen name="text_size_header">20sp</dimen>
     <dimen name="margin">8dp</dimen>
+    <dimen name="margin_small">4dp</dimen>
 </resources>
